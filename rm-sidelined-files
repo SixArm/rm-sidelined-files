@@ -1,0 +1,76 @@
+#!/bin/sh
+set -euf
+
+##
+# This script deletes sidelined files e.g. files that we consider
+# to be old files, or backup files, or tempoary files, etc.
+#
+# Syntax:
+#
+#     $ rm-sidelined-files [dir]
+#
+# Example to process the current directory and all subdirectories:
+#
+#     $ rm-sidelined-files
+#
+# Example to process a specific directory:
+#
+#     $ rm-sidelined-files /var/log
+#
+#
+# ## Which files?
+#
+#  Files with extensions that are typically for sidelined files.
+#
+#    * .bak, .back, .backup
+#  
+#    * .old
+#  
+#    * .tmp, .temp, .temporary
+#
+#
+# ## Compatibility notes
+#
+# We prefer to be more compatible rather than system-specific.
+#
+#   * To delete files, we prefer `-exec rm` vs. `-delete`.
+#     The former is more compatible, the latter is faster.
+#
+#   * To name match, we prefer using `-name` vs. `-iname`.
+#     This means we need to match on upper case and lower case.
+#
+#   * To regex match, we prefer patterns to be basic vs. extended.
+#     The former is more compatible, the latter is more modern.
+#
+#   * We prefer POSIX code vs. shell-specific code.
+#
+#   * We prefer the code to be more DAMP than DRY.
+#     For example, the code has separate name matching
+#     for `.bz` and `.bz2`, even though we could combine these.
+#
+#
+# ## Tracking
+#
+#   * Command: rm-sidelined-files
+#   * Website: http://sixarm.com/rm-sidelined-files
+#   * Cloning: https://github.com/sixarm/rm-sidelined-files
+#   * Version: 4.0.1
+#   * Created: 2013-12-09
+#   * Updated: 2019-09-08
+#   * License: GPL
+#   * Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
+#   * Tracker: 35cc7c1096bbd8c5246949b5d200be15
+##
+
+find "${1:-.}" \
+    -type f \
+    \( \
+    -name "*.[Bb][Aa][Kk]" -o \
+    -name "*.[Bb][Aa][Ck][Kk]" -o \
+    -name "*.[Bb][Aa][Ck][Kk][Uu][Pp]" -o \
+    -name "*.[Oo][Ll][Dd]" -o \
+    -name "*.[Tt][Mm][Pp]" -o \
+    -name "*.[Tt][Em][Mm][Pp]" -o \
+    -name "*.[Tt][Em][Mm][Pp][Oo][Rr][Aa][Rr][Yy]" \
+    \) \
+    -exec rm {} \;
